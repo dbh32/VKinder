@@ -1,24 +1,38 @@
 from classes.VK import VK
+
+
 # from datetime import datetime, date, timedelta
 
 
 class User(VK):
 
-    def __init__(self, login='+79104405298', password='neroguespwn%imba555'):
+    # VK login (or email/phone), password
+    def __init__(self, login='', password=''):
         VK.__init__(self, login, password)
         self.info = self.get_info()
-        # self.age = (date.today() - datetime.strptime(self.info['bdate'], '%d.%m.%Y').date()) \
-        #            // timedelta(days=365.2425)
 
-    def get_groups(self):
-        return self.vk.groups.get()
+    #     self.age = self.get_age()
+    #
+    # def get_age(self):
+    #     bdate_as_date = datetime.strptime(self.info['bdate'], '%d.%m.%Y').date()
+    #     age = (date.today() - bdate_as_date) // timedelta(days=365.2425)
+    #     return age
 
-    def get_friends(self):
-        return self.vk.friends.get()
+    def get_groups(self, uid):
+        # Получаем список групп для пользователя с id=uid
+        print('@')
+        try:
+            return self.vk.groups.get(user_id=uid)
+        except:
+            # Заглушка на случай закрытого профиля
+            return {'count': 0, 'items': []}
 
     def get_info(self):
-        params = 'sex, relation, bdate, home_town, interests, music, books'
-        for data in self.vk.users.get(fields=params):
+        # Собираем информацию о пользователе, для которого запускается сервис
+        # Если соответствующие поля заполнены, то пишем ОК
+        # Если нет - спрашиваем
+        fields = 'sex, bdate, home_town, interests, music, books'
+        for data in self.vk.users.get(fields=fields):
 
             if 'bdate' not in data.keys():
                 bdate = input('Укажите дату и год рождения (dd.mm.yyyy): ')
@@ -65,7 +79,29 @@ class User(VK):
                 print('Интересы -- ОК\n')
                 pass
 
-            data.update({'groups': self.get_groups()})
-            data.update({'friends': self.get_friends()})
+            # Добавляем информацию о группах
+            data.update({'groups': self.get_groups(data['id'])})
+
+            # Убираем ненужные поля
+            data.pop('is_closed')
+            data.pop('can_access_closed')
 
             return data
+
+    def search_users(self):
+        # Поиск людей по критериям
+        print('Пол')
+        print('"1" - жен, "2" - муж, "0" - всё равно')
+        sex = int(input('Кого ищём? '))
+
+        print('\nТеперь возраст')
+        age_from = int(input('От: '))
+        age_to = int(input('До: '))
+
+        fields = 'home_town, common_count, interests, music, books, sex, relation, bdate'
+
+        # Значение home_town подставляется из информации о нашем пользователе
+        # Если в итоге пусто, то так и будем искать
+        return self.vk.users.search(
+            count=100, fields=fields, sex=sex, hometown=self.info['home_town'], age_from=age_from, age_to=age_to
+        )

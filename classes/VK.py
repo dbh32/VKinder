@@ -7,6 +7,7 @@ class VK:
         self.vk = self.vk_auth(login, password)
 
     def vk_auth(self, login, password):
+        # Получаем сессию для работы с VK API
         vk_session = vk_api.VkApi(login, password)
         try:
             vk_session.auth(token_only=True)
