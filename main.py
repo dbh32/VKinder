@@ -67,7 +67,7 @@ def get_top10_users_avatars(user, db, collection):
         for uid in db.mongo_get_top10_list(collection):
             data.append({'id': uid,
                          'photos': format_photos_dict(user.get_profile_pics(uid)['items'])})
-    except:
+    except KeyError:
         # Если профиль закрыт, к сожалению, ничего не получим
         pass
 
@@ -91,7 +91,6 @@ def format_photos_dict(photos):
             element = {'likes': photo['likes']['count'], 'url': format_url(photo['sizes'])}
             photos_list.append(element)
 
-    print(photos_list)
     return photos_list
 
 
@@ -106,18 +105,22 @@ def format_url(sizes):
             return photo_info['url']
 
 
+def login():
+    # VK login (or email/phone), password
+    log = input('VK Login (email/phone): ')
+    pwd = input('Password: ')
+    return [log, pwd]
+
+
 if __name__ == '__main__':
     print('______________________________________________________\n'
           '|##  найди  #####################  бесплатно  #######|\n'
           '|#####  себе  ######  *VKINDER*  #######  жми  ######|\n'
           '|##########  пару  #####################  без смс  ##|\n')
 
-    # VK login (or email/phone), password
-    login = input('VK Login (email/phone): ')
-    password = input('Password: ')
+    login_data = login()
     print('\nПроверяем информацию о пользователе...\n')
-    vasya = User(login, password)
-    # vasya = User()
+    vasya = User(login_data[0], login_data[1])
 
     # db, address, port
     vkinder = MongoDB()
