@@ -1,8 +1,10 @@
 import unittest
 from unittest.mock import patch
 import main
-import random, string
-from tests.data.cases import User, user_info
+import random
+import string
+from tests.data.cases import User
+from tests.data.cases import user_info
 
 
 def random_word(length):
