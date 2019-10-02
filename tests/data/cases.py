@@ -1,4 +1,4 @@
-class User():
+class User:
     def __init__(self):
         self.info = {'music': '"rock","punk",ska',
                      'interests': 'snowboard'}
