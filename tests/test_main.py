@@ -52,6 +52,18 @@ class TestMain(unittest.TestCase):
             self.user.search_users()
         # После успешного обращения к API должно стать две записи в кэше
         self.assertTrue(len(self.user.previous_search_params) == 2)
+        # Повторяем ввод тех же данных
+        mock_input.side_effect = ['1', '18', '24']
+        with unittest.mock.patch('builtins.input', mock_input):
+            self.user.search_users()
+        # Количество записей в кэше не меняется
+        self.assertTrue(len(self.user.previous_search_params) == 2)
+        # А теперь вводим новые парамерты поиска
+        mock_input.side_effect = ['2', '27', '32']
+        with unittest.mock.patch('builtins.input', mock_input):
+            self.user.search_users()
+        # Кэш вновь увеличился
+        self.assertTrue(len(self.user.previous_search_params) == 3)
 
     @unittest.expectedFailure
     @patch('builtins.input')
