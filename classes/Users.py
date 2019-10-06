@@ -28,11 +28,9 @@ class User(VK):
 
     def get_info(self):
         # Собираем информацию о пользователе, для которого запускается сервис
-        # Если соответствующие поля заполнены - пишем ОК
-        # Если нет - спрашиваем
         fields = 'sex, bdate, home_town, interests, music, books'
         for data in self.vk.users.get(fields=fields):
-            print(self.vk.users.get(fields=fields))
+            # print(self.vk.users.get(fields=fields))
             self.check_data(data)
             # Добавляем информацию о группах
             data.update({'groups': self.get_groups(data['id'])})
@@ -44,7 +42,8 @@ class User(VK):
             return data
 
     def check_data(self, data):
-
+        # Если соответствующие поля заполнены - пишем ОК
+        # Если нет - спрашиваем
         if 'bdate' not in data.keys():
             bdate = input('Укажите дату и год рождения (dd.mm.yyyy): ')
             data.update({'bdate': bdate})
